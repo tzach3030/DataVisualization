@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+ font: 12px Arial;
+}
+
+select{
+  float: left;
+}
+
+.svg{
+  float: left;
+}
+
+path { 
+    stroke-width: 2;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+<select onchange="updateLineChart()" id="product"></select>
+<select onchange="updateLineChart()" id="YesNo"></select>
+<br>
+<br>
+</body>
+   
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+
+var margin = {top: 20, right: 160, bottom: 30, left: 50},
+    width = 1020 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+
+var parser = d3.time.format("%m/%d/%Y");
+
+var x = d3.time.scale()
+.range([0, width]);
+
+var y = d3.scale.linear()
+.range([height, 0]);
+
+var color = d3.scale.ordinal()
+    .range(["#00ff00","#ff0000"]);
+
+var xAxis = d3.svg.axis().scale(x)
+    .orient("bottom").ticks(5);
+
+var yAxis = d3.svg.axis().scale(y)
+    .orient("left").tickFormat(d3.format(".1"));
+
+var line = d3.svg.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.num); });
+    
+var svg = d3.select("body")
+    .append("svg")
+    .attr("class","svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.csv("consumer_complaints.csv", function(error, data) {
+  if (error) throw error;
+
+var nested_data = d3.nest()
+  .key(function(d) { return d.product; })
+  .key(function(d) { return d.date_received; })
+  .key(function(d) { return d.consumer_disputed; })
+  .entries(data);
+
+var productBox = document.getElementById("product");
+for (var i = 0; i < nested_data.length; i++) {
+  var option = document.createElement("option");
+  option.text = nested_data[i].key;
+  productBox.add(option);
+};
+
+var YesNoBox = document.getElementById("YesNo");
+for (var i = 0; i < nested_data[0].values[0].values.length; i++) {
+  var option = document.createElement("option");
+  option.text = nested_data[0].values[0].values[i].key;
+  YesNoBox.add(option);
+};
+
+var product = document.getElementById("product").value;
+var YesNo = document.getElementById("YesNo").value;
+
+var index = 0;
+  nested_data.forEach(function(d,i){
+    if(product == d.key)
+      index = i;
+});
+
+  nested_data = nested_data[index];
+
+  var arr = nested_data.values;
+
+  arr.sort(function(a, b){
+  var dateA = new Date(a.key), dateB = new Date(b.key)
+  return dateA-dateB;
+ })
+
+  var YesArr = [];
+  var NoArr = [];
+  var indexY = 0;
+  var indexN = 0;
+  arr.forEach(function(d,i) {
+    if(d.values.length == 1){
+      var temp = {date: d.key,num:d.values[0].values.length};
+      if(d.values[0].key == "Yes"){
+        YesArr[indexY] = temp;
+        indexY++;
+      }
+      else{        
+        NoArr[indexN] = temp;
+        indexN++;
+      }
+    }
+    else{
+      var temp1 = {date: d.key,num:d.values[0].values.length};
+      var temp2 = {date: d.key,num:d.values[1].values.length}
+      if(d.values[0].key == "Yes"){
+        YesArr[indexY] = temp1;
+        indexY++;
+        NoArr[indexN] = temp2;
+        indexN++;
+      }
+      else{
+        YesArr[indexY] = temp2;
+        indexY++;
+        NoArr[indexN] = temp1;
+        indexN++;
+      }
+    }   
+    });
+
+  YesArr.forEach(function(d) {
+        d.date = parser.parse(d.date);
+        return d;
+    });
+
+  NoArr.forEach(function(d) {
+        d.date = parser.parse(d.date);
+        return d;
+    });
+
+  if(YesNo == "No"){
+    x.domain(d3.extent(NoArr, function(d) { return d.date; }));
+    y.domain([0, d3.max(NoArr, function(d) { return d.num; })]);
+
+    var path = svg.append("path")
+        .attr("class", "line")
+        .attr("stroke", color("No"))
+        .attr("d", line(NoArr));
+
+        svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("class", "Sat")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Not Satisfied");
+  }
+  else{
+    x.domain(d3.extent(YesArr, function(d) { return d.date; }));
+    y.domain([0, d3.max(YesArr, function(d) { return d.num; })]);
+
+    var path = svg.append("path")
+        .attr("class", "line")
+        .attr("stroke", color("Yes"))
+        .attr("d", line(YesArr));    
+                   
+        svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("class", "Sat")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Satisfied");
+  }
+
+    var totalLength = path.node().getTotalLength();
+    
+    path.attr("stroke-dasharray", totalLength + " " + totalLength)
+    .attr("stroke-dashoffset", totalLength)
+    .transition()
+    .duration(2000)
+    .ease("linear")
+    .attr("stroke-dashoffset", 0);
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+});
+
+function updateLineChart(){
+d3.csv("consumer_complaints.csv", function(error, data) {
+  if (error) throw error;
+
+var nested_data = d3.nest()
+  .key(function(d) { return d.product; })
+  .key(function(d) { return d.date_received; })
+  .key(function(d) { return d.consumer_disputed; })
+  .entries(data);
+
+var product = document.getElementById("product").value;
+var YesNo = document.getElementById("YesNo").value;
+
+var index = 0;
+  nested_data.forEach(function(d,i){
+    if(product == d.key)
+      index = i;
+});
+
+
+  nested_data = nested_data[index];
+
+  var arr = nested_data.values;
+
+  arr.sort(function(a, b){
+  var dateA=new Date(a.key), dateB=new Date(b.key)
+  return dateA-dateB;
+ })
+
+  var YesArr = [];
+  var NoArr = [];
+  var indexY = 0;
+  var indexN = 0;
+  arr.forEach(function(d,i) {
+    if(d.values.length == 1){
+      var temp = {date: d.key,num:d.values[0].values.length};
+      if(d.values[0].key == "Yes"){
+        YesArr[indexY] = temp;
+        indexY++;
+      }
+      else{        
+        NoArr[indexN] = temp;
+        indexN++;
+      }
+    }
+    else{
+      var temp1 = {date: d.key,num:d.values[0].values.length};
+      var temp2 = {date: d.key,num:d.values[1].values.length}
+      if(d.values[0].key == "Yes"){
+        YesArr[indexY] = temp1;
+        indexY++;
+        NoArr[indexN] = temp2;
+        indexN++;
+      }
+      else{
+        YesArr[indexY] = temp2;
+        indexY++;
+        NoArr[indexN] = temp1;
+        indexN++;
+      }
+    }   
+    });
+
+  YesArr.forEach(function(d) {
+        d.date = parser.parse(d.date);
+        return d;
+    });
+
+  NoArr.forEach(function(d) {
+        d.date = parser.parse(d.date);
+        return d;
+    });
+
+    var svg = d3.select("body").transition();
+
+    if(YesNo == "No"){
+      x.domain(d3.extent(NoArr, function(d) { return d.date; }));
+      y.domain([0, d3.max(NoArr, function(d) { return d.num; })]);
+
+      svg.select(".line") 
+        .duration(750)
+        .attr("d", line(NoArr))
+        .attr("stroke", color(YesNo));
+
+        svg.select(".Sat")
+        .text("Not Satisfied");
+        
+    }
+    else{
+      x.domain(d3.extent(YesArr, function(d) { return d.date; }));
+      y.domain([0, d3.max(YesArr, function(d) { return d.num; })]);
+
+      svg.select(".line") 
+        .duration(750)
+        .attr("d", line(YesArr))
+        .attr("stroke", color(YesNo));
+
+        svg.select(".Sat")
+        .text("Satisfied");
+    }
+
+    svg.select(".x.axis")
+        .duration(750)
+        .call(xAxis);
+
+        svg.select(".y.axis")
+        .duration(750)
+        .call(yAxis);
+    
+  });
+}
+
+</script>

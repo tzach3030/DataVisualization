@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node--parent:hover,.node--leaf:hover {
+  stroke: #000;
+  stroke-width: 1.5px;
+  cursor: pointer;
+}
+
+.node--root{
+	stroke: #000;
+	stroke-width: 1px;
+}
+
+.myTollTip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+.myTollTip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+.myTollTip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+.arc text {
+  font: 15px sans-serif;
+  text-anchor: middle;
+}
+
+.arc path {
+  stroke: #fff;
+}
+
+.label {
+  text-anchor: middle;
+  font-size: 0.9em;
+}
+
+.label-name {
+  font-weight: bold;
+}
+
+
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script>
+
+var margin = 40,
+    diameter = 650;
+
+var companyColor = d3.scale.ordinal()
+    .range(["#90EE90 ","#20B2AA","5F9EA0","#ADFF2F","#6B8E23"]);
+
+var productColor = d3.scale.ordinal()
+    .range(["#800000","#B22222","#FF0000","#FF7F50","#F08080","#FF4500","#FF8C00","#FFD700"]);
+
+var pack = d3.layout.pack()
+    .padding(2)
+    .size([diameter - 5*margin, diameter - 5*margin])
+    .value(function(d) { return d.size; })
+ 
+var svg = d3.select("body").append("svg")
+    .attr("width", diameter + 8*margin)
+    .attr("height", diameter)
+  .append("g")
+    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+d3.csv("consumer_complaints.csv", function(error, data) {
+  if (error) throw error;
+
+  var nested_data = d3.nest()
+	.key(function(d) { return d.company; })
+	.key(function(d) { return d.product; })
+	.entries(data);
+
+	nested_data.sort(function(a, b){
+	  var numA =  a.values.length, numB = b.values.length;
+	  return numB - numA; 
+	 })
+
+	var filterdData = [];
+	var compnies = [];
+	for (var i = 0; i < 5 ; i++) {
+	  filterdData[i] = nested_data[i];
+	  compnies[i] = nested_data[i].key;
+	};
+
+	var products = [];
+	var arr =  filterdData[0].values;
+	arr.forEach(function(d,i){
+		products[i] = d.key;
+	});
+
+	var root = convertArrayToJson(filterdData);
+
+  var focus = root,
+      nodes = pack.nodes(root),
+      view;
+
+  var circle = svg.selectAll("circle")
+      .data(nodes)
+    .enter().append("circle")
+      .attr("class", function(d) { 
+      	if(d.depth == 0)
+      		return "node node--root";
+      	else
+      		if(d.depth == 1)
+      			return "node node--parent";
+      		else
+      			return "node node--leaf"; })
+      .style("fill", function(d) {
+      	if(d.depth == 0)
+      		return "white";
+      	else
+      		if(d.depth == 1)
+      			return companyColor(d.name);
+      		else
+      			return productColor(d.name); })
+      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+
+  var companyTollTip = d3.tip()
+    .attr("class", "myTollTip")
+    .offset([-10, 0])
+    .html(function(d) {
+        return "<strong>Company: " + d.name + "</strong></br><span>Amount of complaints: " + d.value 
+    		+ "</span>";
+    })
+
+  var companyCircle = d3.selectAll(".node--parent")
+  	  .on("mouseover", companyTollTip.show)
+  	  .on("mouseout", companyTollTip.hide)
+  	  .call(companyTollTip);
+
+  var productTollTip = d3.tip()
+    .attr("class", "myTollTip")
+    .offset([-10, 0])
+    .html(function(d) {
+        return "<strong>Product: " + d.name + "</strong></br><span>Amount of complaints: " + d.value 
+    		+ "</span>";
+    })
+
+  var productCircle = d3.selectAll(".node--leaf")
+  	  .on("mouseover", productTollTip.show)
+  	  .on("mouseout", productTollTip.hide)
+  	  .call(productTollTip);
+
+
+  var companyLegend = svg.selectAll(".companyLegend")
+      .data(compnies.slice().reverse())
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(360," + i * 20 + ")"; });
+
+  companyLegend.append("rect")
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d, i) { return companyColor(d); });
+
+  companyLegend.append("text")
+      .attr("x", 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .text(function(d) { return d; });
+
+  var productLegend = svg.selectAll(".productLegend")
+      .data(products.slice().reverse())
+    .enter().append("g")
+      .attr("display", "none")
+      .attr("transform", function(d, i) { return "translate(360," + i * 20 + ")"; });
+
+  productLegend.append("rect")
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d, i) { return productColor(d); });
+
+  productLegend.append("text")
+      .attr("x", 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .text(function(d) { return d; });
+
+  var node = svg.selectAll("circle");
+
+  d3.select("body")
+      .on("click", function() { zoom(root); });
+
+  zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+  function zoom(d) {
+  	if(d.depth == 0){
+  		productLegend.attr("display", "none");
+  		companyLegend.attr("display", "inline");
+  	}
+  	else{
+  		productLegend.attr("display", "inline");
+  		companyLegend.attr("display", "none");
+  	}
+
+  	if(d.depth == 2)
+  		showDount(d);
+    var focus0 = focus; focus = d;
+
+    var transition = d3.transition()
+        .duration(d3.event.altKey ? 7500 : 750)
+        .tween("zoom", function(d) {
+          var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+          return function(t) { zoomTo(i(t)); };
+        });
+  }
+
+  function showDount(info){
+	var width = 500,
+    height = 320,
+    radius = Math.min(width, height) / 2;
+
+var svgToDelete = d3.select(".Dount")[0][0];
+  if(svgToDelete != null){
+    svgToDelete.remove();
+  }
+
+var arc = d3.svg.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(radius - 70);
+
+var pie = d3.layout.pie()
+    .sort(null)
+    .value(function(d) { return d.val; });
+
+var svg = d3.select("body").append("svg")
+	.attr("class","Dount")
+    .attr("width", width-150)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 3 + "," + height / 2 + ")");
+
+ 	var nested_productData = [];
+  	filterdData.forEach(function(d){
+  		if(info.parent.name == d.key)
+	    	d.values.forEach(function(v){
+	    		if(info.name == v.key)
+	    			nested_productData = v.values;
+	        });
+	});
+	
+	nested_productData = d3.nest()
+	.key(function(d) { return d.consumer_disputed; })
+	.entries(nested_productData);
+
+	var arrSize = [];
+	var YorN = [];
+	var sum = 0;
+	nested_productData.forEach(function(d,i){
+		var temp = {name: d.key, val: d.values.length};
+	    arrSize[i] = temp;
+	    sum += d.values.length;
+    });
+
+  var g = svg.selectAll(".arc")
+      .data(pie(arrSize))
+    .enter().append("g")
+      .attr("class", "arc");
+
+   var dountTollTip = d3.tip()
+  .attr("class", "myTollTip")
+  .offset([-10, 0])
+  .html(function(d,i) {
+    if(d.data.name == "Yes")
+        return "<strong>The Percentage Satisfied:</strong></br></br><span>" + (d.value/sum)*100 +
+        " %</span>";
+      else
+        return "<strong>The Percentage Not Satisfied:</strong></br></br><span>" + (d.value/sum)*100 +
+        " %</span>";
+  });
+
+  g.append("path")
+      .attr("d", arc)
+      .style("fill", function(d) { 
+      	if(d.data.name == "Yes")
+      		return "#00ff00";
+      	else
+      		return "#ff0000" })
+      .on("mouseover", dountTollTip.show)
+      .on("mouseout", dountTollTip.hide)
+      .call(dountTollTip);
+
+  g.append("text")
+      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+      .attr("dy", ".35em")
+      .text(function(d) { return d.data.name; });
+
+    var label = svg.append("text")
+    .attr("class", "label");
+
+  label.append("tspan")
+      .attr("class", "label-name")
+      .attr("x", 0)
+      .attr("dy", "-.2em")
+      .text(info.parent.name);
+
+  label.append("tspan")
+      .attr("class", "label-name")
+      .attr("x", 0)
+      .attr("dy", "1.1em")
+      .text(info.name);
+
+  label.append("tspan")
+      .attr("x", 0)
+      .attr("dy", "1.3em")
+      .text(sum);
+  }
+ 
+  function zoomTo(v) {
+    var k = diameter / v[2]; view = v;
+    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    circle.attr("r", function(d) { return d.r * k; });
+  }
+});
+
+d3.select(self.frameElement).style("height", diameter + "px");
+
+function convertArrayToJson(data){
+  var Main = {name: "consumerComplaints", children:[]}
+  data.forEach(function(d,i){
+    var myJson = {name: d.key, children:[]}
+    d.values.forEach(function(v,j){
+      var nestedJson = {name: v.key, size: v.values.length}
+      myJson.children[j] = nestedJson;
+      });
+    Main.children[i] = myJson;
+  });
+  return Main;
+}
+
+</script>

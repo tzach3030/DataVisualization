@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.label {
+  text-anchor: middle;
+  font-size: 2em;
+}
+
+.label-name {
+  font-weight: bold;
+}
+
+.myTollTip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+.myTollTip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+.myTollTip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+</style>
+<body></body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script>
+
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 600 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x0 = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var x1 = d3.scale.ordinal();
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.ordinal()
+    .range(["#00ff00","#ff0000"]);
+
+var xAxis = d3.svg.axis()
+    .scale(x0)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(d3.format("%"));
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.csv("consumer_complaints.csv", function(error, data) {
+  if (error) throw error;
+
+var nested_data = d3.nest()
+.key(function(d) { return d.submitted_via; })
+.entries(data);
+
+
+var YorN = ["Yes","No"];
+nested_data.forEach(function(d){
+  var count = 0;
+  d.values.forEach(function(v){
+      if(v.consumer_disputed == "Yes")
+        count++;
+  });
+  d.dispu = [{name: "Yes",value: count/d.values.length},{name: "No",value: 
+  (d.values.length-count)/d.values.length}];
+});
+
+nested_data.sort(function(a, b){
+  var numA =  a.dispu[0].value, numB = b.dispu[0].value;
+  return numA - numB; 
+ })
+
+  x0.domain(nested_data.map(function(d){ return d.key; }));
+  x1.domain(YorN).rangeRoundBands([0, x0.rangeBand()]);
+  y.domain([0, 1]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Satisfaction");
+
+  var SubmittedVia = svg.selectAll(".SubmittedVia")
+      .data(nested_data)
+    .enter().append("g")
+      .attr("class", "SubmittedVia")
+      .attr("transform", function(d) { return "translate(" + x0(d.key) + ",0)"; })
+      .on("mouseover", ShowPiePadding);
+
+  SubmittedVia.selectAll("rect")
+      .data(function(d) { return d.dispu; })
+      .enter().append("rect")
+      .attr("width", x1.rangeBand())
+      .attr("x", function(d) { return x1(d.name); })
+      .style("fill", function(d) { return color(d.name); })
+      .attr("stroke","black")
+      .attr("stroke-width","2")
+      .attr("y", function(d) { return height; })
+      .attr("height",0)
+      .transition()
+      .duration(200)
+      .delay(600)
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); });
+
+  var myTollTip = d3.tip()
+    .attr("class", "myTollTip")
+    .offset([-10, 0])
+    .html(function(d) {
+      if(d.name == "Yes")
+        return "<strong>The Percentage Satisfied:</strong></br></br><span>" + d.value*100 + " %</span>";
+      else
+        return "<strong>The Percentage Not Satisfied:</strong></br></br><span>"
+         + d.value*100 + " %</span>";
+    })
+
+  d3.selectAll("rect").on("mouseover", myTollTip.show)
+  .on("mouseout", myTollTip.hide)
+  .call(myTollTip);
+
+  var legend = svg.selectAll(".legend")
+      .data(YorN.slice().reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+});
+
+var ShowPiePadding = function(d){
+  var width = 650,
+    height = 400,
+    radius = height / 2 - 10;
+
+  var arc = d3.svg.arc()
+      .innerRadius(radius - 40)
+      .outerRadius(radius);
+
+  var pie = d3.layout.pie()
+      .padAngle(.02);
+
+  var color = d3.scale.ordinal()
+    .range(["#000080","#0000CD","#4169E1","#8A2BE2","#483D8B","#7B68EE","#8B008B","#BA55D3"]);
+
+  var svgToDelete = d3.select(".arcPie")[0][0];
+  if(svgToDelete != null){
+    svgToDelete.remove();
+  }
+
+  var svg = d3.select("body").append("svg")
+      .attr("class","arcPie")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("transform", "translate(" + width / 2.5 + "," + height / 2 + ")");
+
+  var nested_data = d3.nest()
+  .key(function(d) { return d.product; })
+  .entries(d.values);
+
+  nested_data.sort(function(a, b){
+  var numA =  a.values.length, numB = b.values.length;
+  return numA - numB; 
+  })
+
+  var arrSize = [];
+  var products = [];
+  var sum = 0;
+  nested_data.forEach(function(d,i){
+    arrSize[i] = d.values.length;
+    sum += d.values.length;
+    products[i] = d.key;
+  });
+
+  color.domain([0,products.length-1]);
+
+  var myTollTip = d3.tip()
+  .attr("class", "myTollTip")
+  .offset([0, 0])
+  .html(function(d,i) {
+    return "<span>" + products[i] + "</span></br><strong>Amount Of Complaints:</strong><span> "
+     + d.data + "</span>";
+  });
+
+  svg.selectAll("path")
+    .data(pie(arrSize))
+    .enter().append("path")
+    .style("fill", function(d,i) { return color(products.length-1-i); })
+    .attr("stroke","black")
+    .attr("stroke-width","1")
+    .attr("d", arc)
+    .on("mouseover", myTollTip.show)
+    .on("mouseout", myTollTip.hide)
+    .call(myTollTip);
+
+  var label = svg.append("text")
+    .attr("class", "label");
+
+  label.append("tspan")
+      .attr("class", "label-name")
+      .attr("x", 0)
+      .attr("dy", "-.2em")
+      .text(d.key);
+
+  label.append("tspan")
+      .attr("x", 0)
+      .attr("dy", "1.1em")
+      .text(sum);
+
+  var legend = svg.selectAll(".legend")
+      .data(products.slice().reverse())
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(220," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d, i) { return color(i); });
+
+  legend.append("text")
+      .attr("x", 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .text(function(d) { return d; });
+}
+
+</script>
+
+

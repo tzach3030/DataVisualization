@@ -1,0 +1,50 @@
+date_received,product,sub_product,issue,sub_issue,consumer_complaint_narrative,company_public_response,company,state,zipcode,tags,consumer_consent_provided,submitted_via,date_sent_to_company,company_response_to_consumer,timely_response,consumer_disputed,complaint_id
+08/30/2013,Mortgage,Other mortgage,"Loan servicing, payments, escrow account",,,,Capital One,NC,27614,,,Fax,09/03/2013,Closed with explanation,Yes,Yes,511084
+08/30/2013,Mortgage,Other mortgage,"Application, originator, mortgage broker",,,,Wells Fargo & Company,TX,78244,,,Fax,09/03/2013,Closed with explanation,Yes,Yes,510129
+09/24/2013,Mortgage,Other mortgage,"Loan servicing, payments, escrow account",,,,Ocwen,NJ,7307,,,Fax,09/25/2013,Closed with explanation,Yes,No,540608
+09/10/2013,Debt collection,Non-federal student loan,Disclosure verification of debt,Not given enough info to verify debt,,,"MRS BPO, L.L.C.",FL,33903,,,Fax,09/10/2013,Closed with non-monetary relief,Yes,Yes,521469
+08/30/2013,Credit card,,Billing disputes,,,,Discover,FL,32250,,,Fax,09/04/2013,Closed with monetary relief,Yes,No,510131
+08/30/2013,Mortgage,Other mortgage,"Loan servicing, payments, escrow account",,,,U.S. Bancorp,NE,75571,"Older American, Servicemember",,Fax,09/03/2013,Closed with explanation,Yes,Yes,511236
+09/24/2013,Debt collection,"Other (i.e. phone, health club, etc.)",Cont'd attempts collect debt not owed,Debt was paid,,,Encore Capital Group,CA,92108,,,Fax,09/25/2013,Closed with non-monetary relief,Yes,No,540533
+09/24/2013,Credit card,,Late fee,,,,Capital One,OH,44601,,,Fax,09/25/2013,Closed with monetary relief,Yes,No,541250
+09/24/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Nationstar Mortgage,FL,33484,,,Fax,09/26/2013,Closed with explanation,Yes,Yes,539671
+08/30/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Standard Mortgage Corporation,LA,70072,,,Fax,09/03/2013,Closed with explanation,Yes,No,511344
+09/17/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Wells Fargo & Company,MI,48382,,,Fax,09/18/2013,Closed with explanation,Yes,Yes,530099
+08/31/2013,Bank account or service,Checking account,"Account opening, closing, or management",,,,HSBC North America Holdings Inc.,FL,33138,,,Fax,09/03/2013,Closed with explanation,Yes,No,510125
+09/24/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Nationstar Mortgage,CA,95503,,,Fax,09/25/2013,Closed with explanation,Yes,No,539427
+09/17/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,HSBC North America Holdings Inc.,CT,6002,,,Fax,09/18/2013,Closed with explanation,Yes,No,531706
+09/10/2013,Debt collection,"Other (i.e. phone, health club, etc.)",Communication tactics,Called outside of 8am-9pm,,,Encore Capital Group,IL,60491,,,Fax,10/22/2013,Closed with explanation,Yes,No,520915
+09/10/2013,Credit reporting,,Incorrect information on credit report,Information is not mine,,,"TransUnion Intermediate Holdings, Inc.",IL,60491,,,Fax,09/23/2013,Closed with explanation,Yes,No,520916
+09/10/2013,Credit reporting,,Incorrect information on credit report,Information is not mine,,,Experian,IL,60491,,,Fax,09/23/2013,Closed with non-monetary relief,Yes,No,520917
+09/17/2013,Credit reporting,,Incorrect information on credit report,Account status,,,"TransUnion Intermediate Holdings, Inc.",CT,6851,,,Fax,11/05/2013,Closed with non-monetary relief,Yes,No,531113
+09/17/2013,Credit card,,Rewards,,,,HSBC North America Holdings Inc.,NC,28078,,,Fax,09/18/2013,Closed with monetary relief,Yes,No,530203
+09/10/2013,Debt collection,Auto,Communication tactics,Frequent or repeated calls,,,"Retrieval-Masters Creditors Bureau, Inc.",MI,48174,,,Fax,09/11/2013,Closed with non-monetary relief,Yes,No,522086
+09/10/2013,Mortgage,VA mortgage,"Application, originator, mortgage broker",,,,Bank of America,FL,33578,Servicemember,,Fax,09/11/2013,Closed with non-monetary relief,Yes,Yes,521521
+09/03/2013,Debt collection,Mortgage,Cont'd attempts collect debt not owed,Debt was discharged in bankruptcy,,,"West Bay Recovery, Inc.",RI,2920,,,Fax,09/25/2013,Closed with explanation,Yes,No,511883
+09/03/2013,Bank account or service,Checking account,"Account opening, closing, or management",,,,Bank of America,CO,80911,"Older American, Servicemember",,Fax,09/06/2013,Closed with explanation,Yes,No,512719
+09/03/2013,Credit reporting,,Incorrect information on credit report,Account status,,,Experian,SC,29928,"Older American, Servicemember",,Fax,09/11/2013,Closed with explanation,Yes,No,512723
+09/03/2013,Credit reporting,,Incorrect information on credit report,Account status,,,"TransUnion Intermediate Holdings, Inc.",SC,29928,"Older American, Servicemember",,Fax,09/11/2013,Closed with explanation,Yes,No,512724
+09/03/2013,Credit reporting,,Incorrect information on credit report,Account status,,,Equifax,SC,29928,Servicemember,,Fax,09/11/2013,Closed with non-monetary relief,Yes,Yes,512725
+09/03/2013,Credit reporting,,Incorrect information on credit report,Account status,,,Experian,SC,29928,Servicemember,,Fax,09/11/2013,Closed with explanation,Yes,No,512726
+09/03/2013,Credit reporting,,Incorrect information on credit report,Account status,,,"TransUnion Intermediate Holdings, Inc.",SC,29928,Servicemember,,Fax,09/11/2013,Closed with explanation,Yes,Yes,512727
+09/25/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Wells Fargo & Company,LA,71115,,,Fax,09/25/2013,Closed with explanation,Yes,No,542779
+09/03/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Ocwen,MD,21044,,,Fax,09/06/2013,Closed with explanation,Yes,No,512779
+09/03/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Ocwen,MI,48382,Servicemember,,Fax,09/06/2013,Closed with explanation,Yes,No,511661
+09/03/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,JPMorgan Chase & Co.,MI,48382,,,Fax,09/03/2013,Closed with explanation,Yes,No,511662
+09/10/2013,Consumer Loan,Vehicle loan,Managing the loan or lease,,,,Santander Consumer USA Holdings Inc,GA,30076,,,Fax,09/11/2013,Closed with explanation,Yes,No,522613
+09/18/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Nationstar Mortgage,NJ,7054,,,Fax,09/19/2013,Closed with explanation,Yes,No,533298
+09/25/2013,Mortgage,Other mortgage,"Loan servicing, payments, escrow account",,,,Wells Fargo & Company,CA,92630,,,Fax,09/26/2013,Closed with explanation,Yes,Yes,542716
+09/25/2013,Mortgage,Other mortgage,"Loan servicing, payments, escrow account",,,,"PennyMac Loan Services, LLC",NC,28515,,,Fax,09/26/2013,Closed with explanation,Yes,Yes,541338
+09/18/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Citibank,MI,48382,,,Fax,09/19/2013,Closed with explanation,Yes,No,531777
+09/25/2013,Mortgage,Other mortgage,"Application, originator, mortgage broker",,,,"American Internet Mortgage, Inc",CA,95678,,,Fax,11/06/2013,Closed,Yes,No,542083
+09/23/2013,Credit card,,Billing disputes,,,,Capital One,MD,20904,,,Fax,09/30/2013,Closed with non-monetary relief,Yes,No,538413
+09/23/2013,Debt collection,I do not know,Cont'd attempts collect debt not owed,Debt was paid,,,Encore Capital Group,FL,34491,,,Fax,11/03/2013,Closed with explanation,Yes,No,537794
+09/25/2013,Credit card,,Billing disputes,,,,JPMorgan Chase & Co.,CA,93011,,,Fax,10/16/2013,Closed with explanation,Yes,Yes,543064
+09/25/2013,Mortgage,FHA mortgage,"Loan servicing, payments, escrow account",,,,M&T Bank Corporation,IN,46229,Servicemember,,Fax,09/26/2013,Closed with explanation,Yes,No,543102
+09/23/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,Citibank,MI,48382,Servicemember,,Fax,09/24/2013,Closed with explanation,Yes,No,537767
+10/11/2013,Mortgage,Other mortgage,"Loan modification,collection,foreclosure",,,,BB&T Financial,NC,28269,,,Fax,10/15/2013,Closed with explanation,Yes,Yes,558778
+09/30/2013,Debt collection,"Other (i.e. phone, health club, etc.)",Cont'd attempts collect debt not owed,Debt was paid,,,"PayPal Holdings, Inc.",NY,11767,,,Fax,10/01/2013,Closed with explanation,No,No,548018
+09/03/2013,Credit reporting,,Incorrect information on credit report,Account status,,,Experian,RI,2920,,,Fax,09/09/2013,Closed with explanation,Yes,No,512690
+10/23/2013,Credit reporting,,Incorrect information on credit report,Account status,,,Experian,CA,92563,Older American,,Fax,10/24/2013,Closed with explanation,Yes,No,567724
+11/06/2013,Bank account or service,Checking account,"Account opening, closing, or management",,,,PNC Bank N.A.,NJ,8021,,,Fax,11/07/2013,Closed with monetary relief,Yes,Yes,588382
+09/25/2013,Debt collection,"Other (i.e. phone, health club, etc.)",False statements or representation,Attempted to collect wrong amount,,,Encore Capital Group,MS,39208,,,Fax,09/26/2013,Closed with explanation,Yes,No,542659
